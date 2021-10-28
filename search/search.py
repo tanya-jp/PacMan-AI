@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -103,7 +103,11 @@ def searchWithoutCosts(fringe, problem):
     # Insert starting node with action=None and cost=0 to fringe
     fringe.push((start_state, None, 0))
 
-    while not fringe.isEmpty():
+    while True:
+
+        if fringe.isEmpty():
+            return
+
         node = fringe.pop()
         state = node[0]
 
@@ -119,27 +123,36 @@ def searchWithoutCosts(fringe, problem):
                 successor_state = s[0]
 
                 if successor_state not in visited:
-                    parent[s] = node
                     fringe.push(s)
+                    parent[s] = node
 
     return []
 
 
 def searchWithCosts(fringe, problem, heuristic):
+    """
+    Returns path to the goal for A* and UCS
+    """
+
+    # Dict to track the cost of each node
+    cost = dict()
     # parent[node1] = node2 shows that the parent of node1 is node2
     parent = dict()
     # States that have already been visited
     visited = set()
-    # Dict to track the cost of each node
-    cost = dict()
 
     # Insert starting node with action=None and cost=0 to fringe
     start_state = problem.getStartState()
-    fringe.push(item=(start_state, None), priority=0)
+    start_state_h = heuristic(problem.getStartState(), problem)
+    fringe.push(item=(start_state, None), priority=start_state_h)
     # The cost is the priority of this item
     cost[start_state] = 0
 
-    while not fringe.isEmpty():
+    while True:
+
+        if fringe.isEmpty():
+            return
+
         node = fringe.pop()
         state = node[0]
 
@@ -147,6 +160,7 @@ def searchWithCosts(fringe, problem, heuristic):
         if problem.isGoalState(state):
             return findPath(node, parent)
 
+        # Make graph and calculate costs
         if state not in visited:
             visited.add(state)
 
@@ -155,15 +169,18 @@ def searchWithCosts(fringe, problem, heuristic):
                 successor_cost = s[2]
 
                 if successor_state not in visited:
+                    # g from start state to this successor state
                     g = cost[state] + successor_cost
+                    # h based on given heuristic
                     h = heuristic(successor_state, problem)
-                    # To understand why this works, check how update function acts
+                    # If this path is new or better(cost is lower) fringe will be updated
                     fringe.update(s[:2], g+h)
+                    # Update cost of this path
                     cost[successor_state] = g
+                    # Define parent of this node base on state and successor
                     parent[s[:2]] = node
 
     return []
-
 
 
 def depthFirstSearch(problem):
@@ -193,7 +210,6 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    # return searchWithCosts(nullHeuristic, util.PriorityQueue(), problem)
     return searchWithCosts(util.PriorityQueue(), problem, nullHeuristic)
 
 
@@ -208,8 +224,7 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
-
+    return searchWithCosts(util.PriorityQueue(), problem, heuristic)
 
 # Abbreviations
 bfs = breadthFirstSearch
