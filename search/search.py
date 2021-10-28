@@ -74,6 +74,21 @@ def tinyMazeSearch(problem):
     return [s, s, w, s, w, w, s, w]
 
 
+def findPath(node, parent):
+    """
+    Fnd path recursively
+    :param node: goal node
+    :param parent: parents dictionary to find parent of each node
+    :return: path from start to goal
+    """
+    action = []
+    curr = node
+    while curr[1] is not None:
+        action.insert(0, curr[1])
+        curr = parent[curr]
+    return action
+
+
 def searchWithoutCosts(fringe, problem):
     """
     Returns path to the goal for DFS and BFS
@@ -94,25 +109,61 @@ def searchWithoutCosts(fringe, problem):
 
         # Find path recursively
         if problem.isGoalState(state):
-            action = []
-            curr = node
-            while curr[1] is not None:
-                action.insert(0, curr[1])
-                curr = parent[curr]
-            return action
+            return findPath(node, parent)
 
         # Make graph
         if state not in visited:
             visited.add(state)
 
-            for successor in problem.getSuccessors(state):
-                successor_state = successor[0]
+            for s in problem.getSuccessors(state):
+                successor_state = s[0]
 
                 if successor_state not in visited:
-                    fringe.push(successor)
-                    parent[successor] = node
+                    parent[s] = node
+                    fringe.push(s)
 
     return []
+
+
+def searchWithCosts(fringe, problem, heuristic):
+    # parent[node1] = node2 shows that the parent of node1 is node2
+    parent = dict()
+    # States that have already been visited
+    visited = set()
+    # Dict to track the cost of each node
+    cost = dict()
+
+    # Insert starting node with action=None and cost=0 to fringe
+    start_state = problem.getStartState()
+    fringe.push(item=(start_state, None), priority=0)
+    # The cost is the priority of this item
+    cost[start_state] = 0
+
+    while not fringe.isEmpty():
+        node = fringe.pop()
+        state = node[0]
+
+        # Find path recursively
+        if problem.isGoalState(state):
+            return findPath(node, parent)
+
+        if state not in visited:
+            visited.add(state)
+
+            for s in problem.getSuccessors(state):
+                successor_state = s[0]
+                successor_cost = s[2]
+
+                if successor_state not in visited:
+                    g = cost[state] + successor_cost
+                    h = heuristic(successor_state, problem)
+                    # To understand why this works, check how update function acts
+                    fringe.update(s[:2], g+h)
+                    cost[successor_state] = g
+                    parent[s[:2]] = node
+
+    return []
+
 
 
 def depthFirstSearch(problem):
@@ -142,7 +193,8 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # return searchWithCosts(nullHeuristic, util.PriorityQueue(), problem)
+    return searchWithCosts(util.PriorityQueue(), problem, nullHeuristic)
 
 
 def nullHeuristic(state, problem=None):
