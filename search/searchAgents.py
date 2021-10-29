@@ -288,8 +288,6 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
-        # Start state is pacman's starting position and all 4 unvisited corners
-        self.startState = (self.startingPosition, self.corners)
 
     def getStartState(self):
         """
@@ -297,7 +295,8 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        return self.startState
+        # Start state is pacman's starting position and all 4 unvisited corners
+        return self.startingPosition, self.corners
 
     def isGoalState(self, state):
         """
@@ -379,11 +378,23 @@ def cornersHeuristic(state, problem):
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
     """
-    corners = problem.corners # These are the corner coordinates
-    walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
+    corners = problem.corners  # These are the corner coordinates
+    walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    if problem.isGoalState(state):
+        return 0  # Default to trivial solution
+
+    # The heuristic is the Manhattan distance of the furthest  unvisited corner
+    from util import manhattanDistance
+
+    max = 0
+    for corner in state[1]:
+        dis = manhattanDistance(state[0], corner)
+        if dis > max:
+            max = dis
+
+    return max
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
