@@ -227,6 +227,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     "*** YOUR CODE HERE ***"
     # return searchWithCosts(util.PriorityQueue(), problem, heuristic)
 
+    # Set of visited positions in order to avoid revisiting them again
     # Initialize the explored set to be empty
     visited = set()
 
