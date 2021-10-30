@@ -126,7 +126,6 @@ def searchWithoutCosts(fringe, problem):
                     fringe.push(s)
                     parent[s] = node
 
-    return []
 
 
 def searchWithCosts(fringe, problem, heuristic):
@@ -134,54 +133,44 @@ def searchWithCosts(fringe, problem, heuristic):
     Returns path to the goal for A* and UCS
     """
 
-    # Dict to track the cost of each node
-    cost = dict()
-    # parent[node1] = node2 shows that the parent of node1 is node2
-    parent = dict()
-    # States that have already been visited
+    # Set of visited positions in order to avoid revisiting them again
+    # Initialize the explored set to be empty
     visited = set()
 
+    # fringe = util.PriorityQueue()
     # Insert starting node with action=None and cost=0 to fringe
     start_state = problem.getStartState()
-    start_state_h = heuristic(start_state, problem)
-    fringe.push(item=(start_state, None), priority=0)
-    # The cost is the priority of this item
-    cost[start_state] = 0
+    start_h = heuristic(start_state, problem)
+    fringe.push(item=(start_state, []), priority=start_h)
 
     while True:
 
         if fringe.isEmpty():
-            return
+            return False
 
         node = fringe.pop()
         state = node[0]
+        path = node[1]
 
-        # Find path recursively
+        visited.add(state)
+
         if problem.isGoalState(state):
-            return findPath(node, parent)
+            return path
 
-        # Make graph and calculate costs
-        if state not in visited:
-            visited.add(state)
+        for x in problem.getSuccessors(state):
+            successor_state = x[0]
+            successor_action = x[1]
+            successor_cost = x[2]
+            sPath = path + [successor_action]
+            sCost = problem.getCostOfActions(sPath) + heuristic(successor_state, problem)
+            if (successor_state not in visited) and (successor_state not in (y[2][0] for y in fringe.heap)):
+                fringe.push((successor_state, sPath), sCost)
 
-            for s in problem.getSuccessors(state):
-                successor_state = s[0]
-                successor_cost = s[2]
-
-                if successor_state not in visited:
-                    # g from start state to this successor state
-                    g = cost[state] + successor_cost
-                    # h based on given heuristic
-                    h = heuristic(successor_state, problem)
-                    # If this path is new or better(cost is lower) fringe will be updated
-                    totalCost = g+h
-                    fringe.update(s[:2], totalCost)
-                    # Update cost of this path
-                    cost[successor_state] = g
-                    # Define parent of this node base on state and successor
-                    parent[s[:2]] = node
-
-    return []
+            elif successor_state in (y[2][0] for y in fringe.heap):
+                for s in fringe.heap:
+                    if successor_state == s[2][0]:
+                        if s[0] > sCost:
+                            fringe.update((successor_state, sPath), sCost)
 
 
 def depthFirstSearch(problem):
@@ -225,46 +214,7 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    # return searchWithCosts(util.PriorityQueue(), problem, heuristic)
-
-    # Set of visited positions in order to avoid revisiting them again
-    # Initialize the explored set to be empty
-    visited = set()
-
-    fringe = util.PriorityQueue()
-    # Insert starting node with action=None and cost=0 to fringe
-    start_state = problem.getStartState()
-    start_h = heuristic(start_state, problem)
-    fringe.push(item=(start_state, []), priority=start_h)
-
-    while True:
-
-        if fringe.isEmpty():
-            return False
-
-        node = fringe.pop()
-        state = node[0]
-        path = node[1]
-
-        visited.add(state)
-
-        if problem.isGoalState(state):
-            return path
-
-        for x in problem.getSuccessors(state):
-            successor_state = x[0]
-            successor_action = x[1]
-            successor_cost = x[2]
-            sPath = path + [successor_action]
-            sCost = problem.getCostOfActions(sPath) + heuristic(successor_state, problem)
-            if (successor_state not in visited) and (successor_state not in (y[2][0] for y in fringe.heap)):
-                fringe.push((successor_state, sPath), sCost)
-
-            elif successor_state in (y[2][0] for y in fringe.heap):
-                for s in fringe.heap:
-                    if successor_state == s[2][0]:
-                        if s[0] > sCost:
-                            fringe.update((successor_state, sPath), sCost)
+    return searchWithCosts(util.PriorityQueue(), problem, heuristic)
 
 
 # Abbreviations
