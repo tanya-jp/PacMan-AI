@@ -74,7 +74,30 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+
+        # If agent takes this action there is a ghost that will eat the pacman,
+        # so pacman should run and that's why we give the lowest score.
+        for gp in newGhostStates:
+            if manhattanDistance(newPos, gp.getPosition()) < 2:
+                return -float('inf')
+
+        # By action this action, no ghost will eat our pacman.
+        # If after doing this action the number of dots decreases,
+        # it implies by taking this action pacman will eat a dot.
+        # So do it and eat food!
+        currentFoodNum = len(currentGameState.getFood().asList())
+        newFoodList = newFood.asList()
+        newFoodNum = len(newFoodList)
+        if newFoodNum < currentFoodNum:
+            return float('inf')
+
+        # Pacman could not eat food yet! So he should try to find the closest one.
+        # The lower distance is, the higher the score will be
+        minDistance = float('inf')
+        for food in newFoodList:
+            distance = manhattanDistance(food, newPos)
+            minDistance = min(distance, minDistance)
+        return 1.0 / minDistance
 
 
 def scoreEvaluationFunction(currentGameState):
