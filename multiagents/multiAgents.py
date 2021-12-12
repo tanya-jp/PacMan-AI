@@ -92,12 +92,14 @@ class ReflexAgent(Agent):
             return float('inf')
 
         # Pacman could not eat food yet! So he should try to find the closest one.
-        # The lower distance is, the higher the score will be
-        minDistance = float('inf')
+        # Find the closest food
+        minFoodDist = float('inf')
         for food in newFoodList:
-            distance = manhattanDistance(food, newPos)
-            minDistance = min(distance, minDistance)
-        return 1.0 / minDistance
+            foodDist = manhattanDistance(newPos, food)
+            if foodDist < minFoodDist:
+                minFoodDist = foodDist
+        # The lower distance is, the higher the score will be
+        return 1.0 / minFoodDist
 
 
 def scoreEvaluationFunction(currentGameState):
@@ -346,13 +348,68 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
 
 def betterEvaluationFunction(currentGameState):
     """
-    Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
-    evaluation function (question 5).
-
-    DESCRIPTION: <write something here so we know what you did>
+      Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
+      evaluation function (question 5).
+      DESCRIPTION:
+      The following features are considered and combined:
+        - Compute the maze distance to the closest food dot
+        - Compute the maze distance to the closest capsule
+        - If the ghost is scared and close, eat it
+        - If the ghost is not scared and close, run away
+        - Take into account score (the longer the game is, the lower the score will be)
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # Same evaluation function as evaluationFunction
+    # If ghost is scared pacman runs to the ghost and eats the ghost
+    newFood = currentGameState.getFood()
+    newPos = currentGameState.getPacmanPosition()
+    newGhostStates = currentGameState.getGhostStates()
+    newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+
+    foodList = newFood.asList()
+
+    # There is no food, so the game is finished and the score will not chang
+    if not foodList:
+        return currentGameState.getScore()
+
+    # Find the closest and the furthest food
+    minFoodDist = float('inf')
+    maxFoodDist = -float('inf')
+    for food in foodList:
+        foodDist = manhattanDistance(newPos, food)
+        if foodDist < minFoodDist:
+            minFoodDist = foodDist
+        if foodDist > maxFoodDist:
+            maxFoodDist = foodDist
+
+    # Find the closest ghost from the Pacman
+    minGhostDist = float('inf')
+    for gp in newGhostStates:
+        ghostDist = manhattanDistance(newPos, gp.getPosition())
+        if ghostDist < minGhostDist:
+            minGhostDist = ghostDist
+
+    # Calculate new score based on states
+    score = currentGameState.getScore()
+
+    # If Ghost is Scared, pacman runs to the ghost to eat that ghost
+    if newScaredTimes[0] > 0:
+        score += - minGhostDist - minFoodDist
+
+    # If there is only one dot left then minFoodDist == maxFoodDist
+    # If remained food is before the nearest ghost, the score increases,
+    # otherwise pacman should pass the post first and obviously the score decreases
+    # The lower food distance is, the higher the score will be
+    elif len(foodList) == 1:
+        score += minGhostDist - minFoodDist
+
+    # There is more than one dot the score will change based on
+    # nearest and furthest distance between pacman and remained dots
+    else:
+        score += minGhostDist - (maxFoodDist + minFoodDist)
+
+    return score
+
 
 
 # Abbreviation

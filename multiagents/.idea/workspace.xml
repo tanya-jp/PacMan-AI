@@ -43,7 +43,8 @@
       <updated>1639295255823</updated>
       <workItem from="1639295257025" duration="55000" />
       <workItem from="1639295699094" duration="717000" />
-      <workItem from="1639296552075" duration="14210000" />
+      <workItem from="1639296552075" duration="14624000" />
+      <workItem from="1639321751457" duration="6029000" />
     </task>
     <task id="LOCAL-00001" summary="&quot;Complete evaluationFunction&quot;">
       <created>1639299003935</created>
@@ -73,7 +74,14 @@
       <option name="project" value="LOCAL" />
       <updated>1639311208765</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="&quot;Add expectimax and some changes&quot;">
+      <created>1639313923317</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1639313923317</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -83,6 +91,7 @@
     <MESSAGE value="&quot;Complete evaluationFunction&quot;" />
     <MESSAGE value="&quot;Add minimax&quot;" />
     <MESSAGE value="&quot;Add alfa beta&quot;" />
-    <option name="LAST_COMMIT_MESSAGE" value="&quot;Add alfa beta&quot;" />
+    <MESSAGE value="&quot;Add expectimax and some changes&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="&quot;Add expectimax and some changes&quot;" />
   </component>
 </project>
