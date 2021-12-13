@@ -272,8 +272,6 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
         return maxValue, bestAction
 
-
-
     def getAction(self, gameState):
         """
         Returns the minimax action using self.depth and self.evaluationFunction
