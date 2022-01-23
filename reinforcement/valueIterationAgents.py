@@ -57,6 +57,16 @@ class ValueIterationAgent(ValueEstimationAgent):
         self.values = util.Counter() # A Counter is a dict with default 0
         self.runValueIteration()
 
+    def calculateBestQValue(self, state, bestQValue):
+        """
+        Finds best value of Q based on possible actions of each state
+        """
+        for action in self.mdp.getPossibleActions(state):
+            QValue = self.computeQValueFromValues(state, action)
+            bestQValue = max(bestQValue, QValue)
+        return bestQValue
+
+
     def runValueIteration(self):
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
@@ -69,9 +79,7 @@ class ValueIterationAgent(ValueEstimationAgent):
             for s in self.mdp.getStates():
                 if not self.mdp.isTerminal(s):
                     updatedValues[s] = -999
-                    for a in self.mdp.getPossibleActions(s):
-                        QValue = self.computeQValueFromValues(s, a)
-                        updatedValues[s] = max(QValue, updatedValues[s])
+                    updatedValues[s] = self.calculateBestQValue(s, updatedValues[s])
             self.values = updatedValues
 
     def getValue(self, state):
@@ -161,10 +169,7 @@ class AsynchronousValueIterationAgent(ValueIterationAgent):
             state = s[state_num]
             if not self.mdp.isTerminal(state):
                 updatedQValue = -999
-                for action in self.mdp.getPossibleActions(state):
-                    QValue = self.computeQValueFromValues(state, action)
-                    updatedQValue = max(QValue, updatedQValue)
-                self.values[state] = updatedQValue
+                self.values[state] = self.calculateBestQValue(state, updatedQValue)
 
 
 class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
@@ -183,17 +188,6 @@ class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
         """
         self.theta = theta
         ValueIterationAgent.__init__(self, mdp, discount, iterations)
-
-    def calculateBestQValue(self, state):
-        """
-        Finds best value of Q based on possible actions of each state
-        """
-        bestQValue = -9999
-
-        for action in self.mdp.getPossibleActions(state):
-            QValue = self.computeQValueFromValues(state, action)
-            bestQValue = max(bestQValue, QValue)
-        return bestQValue
 
     def runValueIteration(self):
         "*** YOUR CODE HERE ***"
@@ -215,7 +209,7 @@ class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
 
         for s in self.mdp.getStates():
             if not self.mdp.isTerminal(s):
-                diff = abs(self.calculateBestQValue(s) - self.values[s])
+                diff = abs(self.calculateBestQValue(s, -9999) - self.values[s])
                 # Because the priority queue is a min-heap, so diff should be negative
                 minHeap.push(s, -diff)
         for each in range(self.iterations):
@@ -224,9 +218,9 @@ class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
                 break
             else:
                 state = minHeap.pop()
-                self.values[state] = self.calculateBestQValue(state)
+                self.values[state] = self.calculateBestQValue(state, -9999)
                 for predecessor in predecessors[state]:
-                    diff = abs(self.calculateBestQValue(predecessor) - self.values[predecessor])
+                    diff = abs(self.calculateBestQValue(predecessor, -9999) - self.values[predecessor])
                     if diff > self.theta:
                         minHeap.update(predecessor, -diff)
 
