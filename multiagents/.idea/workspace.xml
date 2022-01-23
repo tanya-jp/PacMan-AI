@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="d07e3bdb-620c-460f-80da-ceabf35a6aa3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/multiAgents.py" beforeDir="false" afterPath="$PROJECT_DIR$/multiAgents.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,6 +45,8 @@
       <workItem from="1639296552075" duration="14624000" />
       <workItem from="1639321751457" duration="6764000" />
       <workItem from="1639388069810" duration="3857000" />
+      <workItem from="1639407047527" duration="198000" />
+      <workItem from="1642757959661" duration="107000" />
     </task>
     <task id="LOCAL-00001" summary="&quot;Complete evaluationFunction&quot;">
       <created>1639299003935</created>
@@ -89,7 +90,14 @@
       <option name="project" value="LOCAL" />
       <updated>1639327913226</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="&quot;Add final version&quot;">
+      <created>1639407089264</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1639407089264</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -101,6 +109,7 @@
     <MESSAGE value="&quot;Add alfa beta&quot;" />
     <MESSAGE value="&quot;Add expectimax and some changes&quot;" />
     <MESSAGE value="&quot;Add betterEvaluationFunction and some changes&quot;" />
-    <option name="LAST_COMMIT_MESSAGE" value="&quot;Add betterEvaluationFunction and some changes&quot;" />
+    <MESSAGE value="&quot;Add final version&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="&quot;Add final version&quot;" />
   </component>
 </project>
