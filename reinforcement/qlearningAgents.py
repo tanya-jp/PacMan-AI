@@ -106,15 +106,18 @@ class QLearningAgent(ReinforcementAgent):
         legalActions = self.getLegalActions(state)
         action = None
         "*** YOUR CODE HERE ***"
+        # Check if there is any legal action
         if legalActions:
             # Use flipCoin to manage probability epsilon
             # A random legal action is chosen with probability epsilon
             if util.flipCoin(self.epsilon):
-                action = random.choice(legalActions)
+                return random.choice(legalActions)
             # the current best Q-Value is chosen with probability 1 - epsilon
             else:
-                action = self.computeActionFromQValues(state)
-        return action
+                return self.computeActionFromQValues(state)
+        # If there is not any legal action returns None,
+        # otherwise returns chosen action
+        return None
 
     def update(self, state, action, nextState, reward):
         """
@@ -132,8 +135,7 @@ class QLearningAgent(ReinforcementAgent):
 
         # Update sample and Q based on formula
         newSample = reward + self.discount * self.computeValueFromQValues(nextState)
-        newQ = (1 - self.alpha) * self.Qvalues[state][action] + self.alpha * newSample
-        self.Qvalues[state][action] = newQ
+        self.Qvalues[state][action] = (1 - self.alpha) * self.Qvalues[state][action] + self.alpha * newSample
 
     def getPolicy(self, state):
         return self.computeActionFromQValues(state)
@@ -203,13 +205,13 @@ class ApproximateQAgent(PacmanQAgent):
            Should update your weights based on transition
         """
         "*** YOUR CODE HERE ***"
-        bestQValue = self.discount * self.computeValueFromQValues(nextState)
-        QValue = self.getQValue(state, action)
-        difference = reward + bestQValue - self.getQValue(state, action)
+        # every thing in this part is based on formula
+        extractedFeatures = self.featExtractor.getFeatures(state, action)
+        maxQValue = self.discount * self.computeValueFromQValues(nextState)
+        difference = maxQValue - self.getQValue(state, action) + reward
 
-        features = self.featExtractor.getFeatures(state, action)
-        for feature in features:
-            self.weights[feature] += self.alpha * difference * features[feature]
+        for feature in extractedFeatures:
+            self.weights[feature] += self.alpha * difference * extractedFeatures[feature]
 
     def final(self, state):
         "Called at the end of each game."
